@@ -1,0 +1,74 @@
+﻿@{
+    @model URLConverterModel;
+    var urldata = ViewBag.url;
+    string host = "https://localhost:5001/";
+}
+@if (!String.IsNullOrEmpty((String)TempData["message"]))
+{<div class="alert alert-success text-center" role="alert">@TempData["message"]</div>}
+@if (!String.IsNullOrEmpty((String)TempData["error"]))
+{<div class="alert alert-danger text-center" role="alert">@TempData["error"]</div>}
+
+<div class="card border-primary shadow-sm">
+    <form asp-action="insertUrl" method="post">
+        @Html.AntiForgeryToken()
+        <div class="card-body">
+            <h3>URL Converter</h3>
+            <hr />
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" class="form-control" id="url" name="UrlOriginal" placeholder="https://..." required />
+                </div>
+                <div class="col-4">
+                    <input type="submit" class="btn btn-primary btn-block" id="convertBtn" value="Convert" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p id="error" class="text-danger">Reminder: The URL need to start with https:// or http://!</p>
+                    <p id="match" class="text-success">Correct URL!</p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<hr />
+
+<div class="card border-primary shadow-sm">
+    <div class="card-body pb-0">
+        <h3>URL Convert List History</h3>
+        <hr />
+    </div>
+    @if (urldata.Count > 0)
+    {
+        <ul class="list-group list-group-flush">
+            @foreach (URLConverterModel uRL in urldata)
+            {
+                <li class="list-group-item">
+                    <div class="row justify-content-between">
+                        <div class="col-4">
+                            <p>Original URL: @(uRL.UrlOriginal)</p>
+                        </div>
+                        <div class="col-4">
+                            <input type="button" class="btn btn-outline-primary copyBtn" value="Copy the URL Link"  />
+                            <input type="hidden" value="@(host+uRL.NewUrl)" class="copyUrl"/>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row justify-content-between">
+                        <div class="col-4">
+                            <p>New URL : @(host+uRL.NewUrl)</p>
+                        </div>
+                        <div class="col-4">
+                            <a class="btn btn-outline-success" asp-action="RedirectToURL" asp-route-hashURL="@uRL.NewUrl" target="_blank">Open the new URL Link</a>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">No URL Convert history</div>
+    }
+
+</div>
